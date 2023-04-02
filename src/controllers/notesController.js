@@ -51,11 +51,17 @@ export default {
         const { title, body } = req.body;
 
         try {
+            let noteToUpdate = {};
+
             let note = await Note.findById(id);
             if (!isOwner(req.user, note)) return res.status(401).json({ error: 'Permission denied' });
 
+            if (body) {
+                noteToUpdate = await Note.findByIdAndUpdate(id, { $set: { body } }, { upsert: true, new: true });
+            } else {
+                noteToUpdate = await Note.findByIdAndUpdate(id, { $set: { title } }, { upsert: true, new: true });
+            }
 
-            let noteToUpdate = await Note.findByIdAndUpdate(id, { $set: { title, body } }, { upsert: true, new: true });
 
             res.status(200).json(noteToUpdate);
 
@@ -81,11 +87,18 @@ export default {
         const { query } = req.query;
 
         try {
-            let seachedNotes = await Note
-                .find({ author: req.user._id })
-                .find({ $text: { $search: query } });
+            let searchedNotes = [];
 
-            res.json(seachedNotes);
+            if (query) {
+                searchedNotes = await Note
+                    .find({ author: req.user._id })
+                    .find({ $text: { $search: query } });
+                return res.json(searchedNotes);
+            }
+
+            searchedNotes = await Note.find({ author: req.user._id });
+            res.json(searchedNotes);
+            
         } catch (error) {
             res.status(500).json({ error: 'problem to search a note' });
         }
