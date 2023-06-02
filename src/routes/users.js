@@ -1,12 +1,15 @@
 import express from 'express';
-import usersController from '../controllers/usersController.js';
-import { WithAuth } from '../middlewares/auth.js';
 const router = express.Router();
 
+import { UserController } from '../controllers/UserController.js';
+import { WithAuth } from '../middlewares/auth.js';
 
-router.post('/register', usersController.registerUser);
-router.post('/login', usersController.login);
-router.put('/', WithAuth, usersController.updateUser);
-router.delete('/', WithAuth, usersController.deleteUser);
+
+const controller = new UserController();
+
+router.post('/register', (req, res) => controller.registerUser(req, res));
+router.post('/login', (req, res) => controller.login(req, res));
+router.put('/', WithAuth, (req, res) => controller.updateUser(req, res));
+router.delete('/', WithAuth, (req, res) => controller.removeUser(req, res));
 
 export default router;

@@ -13,4 +13,4 @@ mongoose.connect(`mongodb+srv://helder:${process.env.DATABASE_PASSWORD}@${proces
     console.log(error);
 });
 
-// mongodb://127.0.0.1:27017/javascriptNotes
+// `mongodb://127.0.0.1:27017/javascriptNotes`
