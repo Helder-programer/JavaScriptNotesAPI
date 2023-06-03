@@ -2,9 +2,11 @@ import express from 'express';
 
 import { NoteController } from '../controllers/NoteController';
 import { WithAuth } from '../middlewares/auth';
+import { NoteRepository } from '../repositories/note/NoteRepository';
 
 const router = express.Router();
-const controller = new NoteController();
+const repository = new NoteRepository();
+const controller = new NoteController(repository);
 
 
 

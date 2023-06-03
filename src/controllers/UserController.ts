@@ -17,7 +17,7 @@ export class UserController {
     }
 
     async registerUser(req: Request, res: Response) {
-        const { name, email, password } = req.body;
+        const { name, email, password }: any = req.body;
 
         await this.userRepository.create({ name, email, password });
 
@@ -39,7 +39,7 @@ export class UserController {
 
     async updateUser(req: Request, res: Response) {
         const userId = req.user!._id;
-        const { name, email, password } = req.body;
+        const { name, email, password }: any = req.body;
 
         await this.userRepository.update({ userId, name, email, password });
 

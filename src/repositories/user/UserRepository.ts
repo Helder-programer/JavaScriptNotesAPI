@@ -3,13 +3,17 @@ import Note from "../../models/Note";
 
 import { ICreateUserDTO } from "./dtos/ICreateUserDTO";
 import { IUpdateUserDTO } from "./dtos/IUpdateUserDTO";
-import { NotFoundError } from "../../helpers/apiErrors";
+import { BadRequestError, NotFoundError } from "../../helpers/apiErrors";
 import { IUserDocument } from "../../models/types/User";
 import { IUserRepository } from "../types/IUserRepository";
 
 export class UserRepository implements IUserRepository {
 
     public async create(data: ICreateUserDTO): Promise<void> {
+        const userToValidate = await this.findByEmail(data.email);
+
+        if (userToValidate) throw new BadRequestError('E-mail already exists');
+
         const user = new User({ name: data.name, email: data.email, password: data.password });
         await user.save();
     }
