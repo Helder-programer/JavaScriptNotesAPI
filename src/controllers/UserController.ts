@@ -1,10 +1,12 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { Request, Response } from 'express';
+
 dotenv.config();
 const secretKey = process.env.JWT_TOKEN;
 
 import { BadRequestError } from '../helpers/apiErrors.js';
-import { UserRepository } from '../repositories/UserRepository.js';
+import { UserRepository } from '../repositories/user/UserRepository.js';
 
 export class UserController {
     #userRepository;
@@ -13,7 +15,7 @@ export class UserController {
         this.#userRepository = new UserRepository();
     }
 
-    async registerUser(req, res) {
+    async registerUser(req: Request, res: Response) {
         const { name, email, password } = req.body;
 
         await this.#userRepository.create(name, email, password);
@@ -21,24 +23,20 @@ export class UserController {
         res.status(200).json({ message: 'User sucessfully created' });
     }
 
-    async login(req, res) {
-        const { email, password } = req.body;
+    async login(req: Request, res: Response) {
+        const { email, password }: any = req.body;
 
         let user = await this.#userRepository.findByEmail(email);
         if (!user) 
             throw new BadRequestError('Incorrect email or password');
 
-        user.isCorrectPassword(password, function (err, same) {
-            if (!same)
-                throw new BadRequestError('Incorrect email or password');
-            else {
-                const token = jwt.sign({ email }, secretKey, { expiresIn: '1d' });
-                res.json({ user, token });
-            }
-        });
+        if (await user.isCorrectPassword(password)) {
+            const token = jwt.sign({ email }, secretKey, { expiresIn: '1d' });
+            res.status(200).json({});
+        }
     }
 
-    async updateUser(req, res) {
+    async updateUser(req: Request, res: Response) {
         const userId = req.user._id;
         const { name, email, password } = req.body;
 
@@ -47,7 +45,7 @@ export class UserController {
         res.status(200).json(user);
     }
 
-    async removeUser(req, res) {
+    async removeUser(req: Request, res: Response) {
         const userId = req.user._id;
         await this.#userRepository.deleteAccount(userId);
 

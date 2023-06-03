@@ -1,6 +1,6 @@
-import Note from "../models/Note.js";
-import { NotFoundError, UnauthorizedError } from '../helpers/apiErrors.js';
-import { isOwner } from "../helpers/notes.js";
+import Note from "../../models/Note.js";
+import { NotFoundError, UnauthorizedError } from '../../helpers/apiErrors.js';
+import { isOwner } from "../../helpers/notes.js";
 
 
 export class NoteRepository {

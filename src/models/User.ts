@@ -1,7 +1,12 @@
-import mongoose from "mongoose";
+import {Schema, model, Model} from "mongoose";
 import bcrypt from 'bcrypt';
 
-let userSchema = new mongoose.Schema({
+import { IUser, IUserMethods } from "./types/User";
+
+
+type UserModel = Model<IUser, {}, IUserMethods>;
+
+let userSchema = new Schema<IUser, UserModel, IUserMethods>({
     name: String,
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -9,7 +14,7 @@ let userSchema = new mongoose.Schema({
     updated_at: { type: Date, default: Date.now },
 });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', async function(next) {
     if (this.isNew || this.isModified('password')) {
         bcrypt.hash(this.password, 10, (err, hashedPassword) => {
             if (err)
@@ -22,14 +27,10 @@ userSchema.pre('save', function(next) {
     }
 });
 
-userSchema.methods.isCorrectPassword = function(password, callback) {
-    bcrypt.compare(password, this.password, function(err, same) {
-        if (err)
-            callback(err);
-        else
-            callback(err, same);
-    });
-}
+userSchema.method('isCorrectPassword', async function isCorrectPassword(password: string) {
+    const isEqualPassword = await bcrypt.compare(password, this.password);
+    return isEqualPassword
+});
 
 
-export default mongoose.model('User', userSchema);
+export default model<IUser, UserModel>('User', userSchema);
