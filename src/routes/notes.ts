@@ -1,7 +1,7 @@
 import express from 'express';
 
-import { NoteController } from '../controllers/NoteController.js';
-import { WithAuth } from '../middlewares/auth.js';
+import { NoteController } from '../controllers/NoteController';
+import { WithAuth } from '../middlewares/auth';
 
 const router = express.Router();
 const controller = new NoteController();

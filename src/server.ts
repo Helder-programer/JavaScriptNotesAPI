@@ -5,8 +5,8 @@ import 'express-async-errors';
 import usersRouter from './routes/users';
 import notesRouter from './routes/notes';
 import { errorMiddleware } from './middlewares/error';
-import './database/database.js';
-import { IUser } from './models/types/User';
+import { IUserDocument } from './models/types/User';
+import './database/database';
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use(errorMiddleware);
 declare global {
     namespace Express {
         interface Request {
-            user?: IUser | null;
+            user?: IUserDocument | null;
         }
     }
 }

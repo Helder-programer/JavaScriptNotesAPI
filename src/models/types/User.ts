@@ -1,15 +1,11 @@
-import { Types } from "mongoose";
+import { Document, Types } from "mongoose";
 
-export interface IUser {
-    _id: Types.ObjectId;
+export interface IUserDocument extends Document {
+    _id: string;
     name: string;
     email: string;
     password: string;
     created_at: Date;
     updated_at: Date;
-}
-
-
-export interface IUserMethods {
     isCorrectPassword(password: string): Promise<boolean>;
 }

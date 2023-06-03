@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-import { INote } from "./types/Note";
+import { INoteDocument } from "./types/Note";
 
-let noteSchema = new mongoose.Schema<INote>({
+let noteSchema = new mongoose.Schema<INoteDocument>({
     title: String,
     body: String,
     created_at: { type: Date, default: Date.now },
@@ -18,4 +18,4 @@ let noteSchema = new mongoose.Schema<INote>({
 noteSchema.index({ 'title': 'text', 'body': 'text' });
 
 
-export default mongoose.model<INote>('Note', noteSchema);
+export default mongoose.model<INoteDocument>('Note', noteSchema);

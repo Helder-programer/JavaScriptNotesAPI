@@ -2,10 +2,9 @@
   "name": "javascript-notes-api",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "start": "node ./src/server.js",
-    "dev": "ts-node-dev --traspile-only --respawn ./src/server.ts"
+    "dev": "ts-node-dev --transpile-only --respawn ./src/server.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",

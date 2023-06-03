@@ -1,32 +1,36 @@
-import Note from "../../models/Note.js";
-import { NotFoundError, UnauthorizedError } from '../../helpers/apiErrors.js';
-import { isOwner } from "../../helpers/notes.js";
+import Note from "../../models/Note";
+import { NotFoundError, UnauthorizedError } from '../../helpers/apiErrors';
+import { isOwner } from "../../helpers/notes";
+import { IUserDocument } from "../../models/types/User";
+import { ICreateNoteDTO } from "./dtos/ICreateNoteDTO";
+import { IUpdateNoteDTO } from "./dtos/IUpdateNoteDTO";
+import { INoteDocument } from "../../models/types/Note";
 
 
 export class NoteRepository {
 
-    async create(title, body, user) {
+    async create(data: ICreateNoteDTO) {
 
-        const note = new Note({ title, body, author: user._id });
+        const note = new Note({ title: data.title, body: data.body, author: data.user._id });
         await note.save();
 
     }
 
-    async update(noteId, title, body, user) {
+    async update(data: IUpdateNoteDTO): Promise<INoteDocument> {
 
-        let noteToUpdate = await this.#findById(noteId, user);
+        let noteToUpdate: INoteDocument;
 
-        if (body) {
-            noteToUpdate = await Note.findByIdAndUpdate(noteId, { $set: { body } }, { upsert: true, new: true });
+        if (data.body) {
+            noteToUpdate = await Note.findByIdAndUpdate(data.noteId, { $set: { body: data.body } }, { upsert: true, new: true });
         } else {
-            noteToUpdate = await Note.findByIdAndUpdate(noteId, { $set: { title } }, { upsert: true, new: true });
+            noteToUpdate = await Note.findByIdAndUpdate(data.noteId, { $set: { title: data.title } }, { upsert: true, new: true });
         }
 
         return noteToUpdate;
     }
 
 
-    async #findById(noteId, user) {
+    private async findById(noteId, user) {
         let searchedNote = await Note.findById(noteId).findOne({ author: user._id });
 
         if (!searchedNote) throw new NotFoundError('Note not found!');
@@ -36,24 +40,23 @@ export class NoteRepository {
 
 
     async remove(noteId, user) {
-        let noteToDelete = await this.#findById(noteId, user);
+        let noteToDelete = await this.findById(noteId, user);
         if (!isOwner(user, noteToDelete)) throw new UnauthorizedError('Permission denied');
         await Note.findByIdAndDelete(noteId);
     }
 
 
     async getNote(noteId, user) {
-        let note = await this.#findById(noteId, user);
-
+        let note = await this.findById(noteId, user);
         return note;
     }
 
-    async findAll(user) {
+    async findAll(user: IUserDocument) {
         let notes = await Note.find({ author: user._id });
         return notes;
     }
 
-    async search(query, user) {
+    async search(query: string, user: IUserDocument) {
         let searchedNotes = [];
 
         if (query) {
