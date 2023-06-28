@@ -33,8 +33,10 @@ export class UserController {
 
         if (await user.isCorrectPassword(password)) {
             const token = jwt.sign({ email }, secretKey!, { expiresIn: '1d' });
-            res.status(200).json({ user, token });
+            return res.status(200).json({ user, token });
         }
+
+        throw new BadRequestError('Incorrect email or password');
     }
 
     async updateUser(req: Request, res: Response) {
